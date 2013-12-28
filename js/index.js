@@ -1,5 +1,7 @@
+var grid2 = ["a","b"];
 var grid3 = ["a","b","c"];
 var grid4 = ["a","b","c","d"];
+
 var topics = [
   {
     id: 0,
@@ -95,8 +97,8 @@ function renderTopics()
 {
   for(i in topics) {
     topic = topics[i];
-    css_class = "topic ui-block-" + (grid3[i%3]);
-    topic_html = "<a href='#browse-topic?id=" + topic.id + "' class='" + css_class + "'>" + topic.name + "</a>"
+    css_class = "topic ui-block-" + (grid2[i%2]);
+    topic_html = "<a href='#browse-topic?id=" + topic.id + "' class='" + css_class + "'><div class='img'/><div class='name'>" + topic.name + "</div></a>"
       $('#browse-topics .topics').append(topic_html);
   }
 }
@@ -108,7 +110,7 @@ function renderTopic(topic)
 
   for(i in topic.mnemonics) {
     mnemonic = topic.mnemonics[i];
-    css_class = "mnemonic ui-block-" + (grid3[i%3]);
+    css_class = "mnemonic ui-block-" + (grid2[i%2]);
     mnemonic_html = "<div class='" + css_class + "'>" + mnemonic.mnemonic_string + "</a>"
       $('#browse-topic .mnenomics').append(mnemonic_html);
   }

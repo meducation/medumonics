@@ -40,24 +40,37 @@ body {
   background:#eee;
 }
 
-.topic {
+#browse-topics .topic.ui-block-a {
   margin-right: 1%;
-  margin-bottom:1%;
-  width: 32% !important;
+}
+
+#browse-topics .topic.ui-block-b {
+  margin-left: 1%;
 }
 
 #browse-topics .topic {
     padding:1rem;
-    border:1px solid #aaa;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border:1px solid #ddd;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
     border-radius:5px;
     background:#fff;
     color:#333;
     text-decoration:none;
+    margin-bottom:2%;
+    width: 49% !important;
 }
 
-#browse-topic .mnemonic {
-    border:1px solid green;
-    background:red;
-    color:#fff;
+#browse-topics .topic .img {
+  background: no-repeat -2px -2px;
+  background-image:url('./images/medical/dermatology.png');
+  width: 31px;
+  height: 31px;
+  border: 0px;
+  margin: -8px 1rem 0px 0;
+  border: 0px;
+  float:left;
 }
+
+#browse-topics .topic .name {
+}
+
