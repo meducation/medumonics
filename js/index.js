@@ -45,6 +45,13 @@ var TOPICS = [
   {id: 3, name: "Urology", mnemonics: []}
 ]
 
+
+var $mnemonic;
+
+$(function() {
+  $mnemonic = $('#mnemonic');
+});
+
 var app = {
   // Application Constructor
   initialize: function() {
@@ -83,6 +90,22 @@ $(document).bind( "pagebeforechange", function( e, data ) {
   }
 });
 
+$( document ).on( "swiperight", $mnemonic, function() {
+  i = MNEMONICS.indexOf($mnemonic.mnemonic)
+  mnemonic = MNEMONICS[i - 1];
+  if(mnemonic) {
+    $.mobile.changePage( "#mnemonic?id=" + mnemonic.id, { reverse: true, transition: 'slide', allowSamePageTransition: true   } );
+  }
+})
+
+$( document ).on( "swipeleft", $mnemonic, function() {
+  i = MNEMONICS.indexOf($mnemonic.mnemonic)
+  mnemonic = MNEMONICS[i + 1];
+  if(mnemonic) {
+    $.mobile.changePage( "#mnemonic?id=" + mnemonic.id, { transition: 'slide', allowSamePageTransition: true  } );
+  }
+})
+
 function changePage(page, urlObj, options) {
   options.dataUrl = urlObj.hash.replace("#", "");
   $.mobile.changePage( page, options );
@@ -118,6 +141,7 @@ function renderTopic(topic)
   $page.find('h1').html(topic.name);
 
   var mnemonics = $.grep(MNEMONICS, function(e,i){return e.topic_id == topic.id});
+  $page.find('.mnenomics').html("");
   for(i in mnemonics) {
     mnemonic = mnemonics[i];
     css_class = "mnemonic box ui-block-" + (grid2[i%2]);
@@ -130,11 +154,11 @@ function renderMnemonic(mnemonic)
 {
   topic = $.grep(TOPICS, function(e,i) {return e.id == mnemonic.topic_id})[0];
 
-  $page = $('#mnemonic')
-  $page.find('.header').css('backgroundImage', "url(" + mnemonic.image_src + ")");
-  $page.find('h1').html(mnemonic.mnemonic);
-  $page.find('.subject').html(mnemonic.subject);
-  $page.find('.mnemonic').html(mnemonic.mnemonic);
+  $mnemonic.mnemonic = mnemonic;
+  $mnemonic.find('.header').css('backgroundImage', "url(" + mnemonic.image_src + ")");
+  $mnemonic.find('h1').html(mnemonic.mnemonic);
+  $mnemonic.find('.subject').html(mnemonic.subject);
+  $mnemonic.find('.mnemonic').html(mnemonic.mnemonic);
   body = "<p>NOTE: From proximal to distal:</p> Duodenum<br/> Jejunum<br/> Ileum<br/> Appendix<br/> Colon<br/> Sigmoid<br/> Rectum</p> <p>NOTE: Alternatively: to include the cecum, 'Dow Jones Industrial Climbing Average Closing Stock Report'.</p>"
-  $page.find('.body').html(body);
+  $mnemonic.find('.body').html(body);
 }
