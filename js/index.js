@@ -3,7 +3,7 @@ var grid3 = ["a","b","c"];
 var grid4 = ["a","b","c","d"];
 
 var MNEMONICS = [
-  {id: 1, topic_id: 0, subject:"Bowel components", mnemonic: "Dow Jones Industrial Average Closing Stock Report", image_src: "http://equityclock.com/pictures/SeasonalChartsDowJonesIndustrialAverageS_269F/image_4.png"},
+  {id: 1, topic_id: 0, subject:"Bowel components", mnemonic: "<strong>D</strong>ow <strong>J</strong>ones <strong>I</strong>ndustrial <strong>A</strong>verage <strong>C</strong>losing <strong>S</strong>tock <strong>R</strong>eport", image_src: "http://equityclock.com/pictures/SeasonalChartsDowJonesIndustrialAverageS_269F/image_4.png"},
   {id: 2, topic_id: 0, subject:"Atrioventricular valves Hi Yield", mnemonic: "LAB RAT", image_src: "http://cardiffstudentmedia.co.uk/gairrhydd/wp-content/uploads/sites/2/2013/11/mouse-lab-rat-101117-02.jpg"},
   {id: 3, topic_id: 0, subject:"Axillary artery branches", mnemonic: "Screw The Lawyer Save A Patient", image_src: "http://ballinyourcourt.files.wordpress.com/2012/10/screw-you.jpg"},
   {id: 4, topic_id: 0, subject: "Brachial artery: recurrent and collateral branches", mnemonic: "I Am Pretty Sexy", image_src: "http://gagmark.com/wp-content/uploads/2012/10/Im-Sexy.png"}
@@ -128,8 +128,13 @@ function renderTopic(topic)
 
 function renderMnemonic(mnemonic)
 {
+  topic = $.grep(TOPICS, function(e,i) {return e.id == mnemonic.topic_id})[0];
+
   $page = $('#mnemonic')
-  $page.find('.subject').html("<strong>" + mnemonic.subject + "</strong> can be remembered by: ");
-  $page.find('.mnemonic').html(mnemonic.mnemonic_string);
-  $page.find('.body').html(mnemonic.body);
+  $page.find('.header').css('backgroundImage', "url(" + mnemonic.image_src + ")");
+  $page.find('h1').html(mnemonic.mnemonic);
+  $page.find('.subject').html(mnemonic.subject);
+  $page.find('.mnemonic').html(mnemonic.mnemonic);
+  body = "<p>NOTE: From proximal to distal:</p> Duodenum<br/> Jejunum<br/> Ileum<br/> Appendix<br/> Colon<br/> Sigmoid<br/> Rectum</p> <p>NOTE: Alternatively: to include the cecum, 'Dow Jones Industrial Climbing Average Closing Stock Report'.</p>"
+  $page.find('.body').html(body);
 }
