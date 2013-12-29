@@ -2,20 +2,19 @@ var grid2 = ["a","b"];
 var grid3 = ["a","b","c"];
 var grid4 = ["a","b","c","d"];
 
-var topics = [
-  {
-    id: 0,
-      name: "Anatomy",
-      mnemonics: JSON.parse("[{\"subject\":\"Causes of exudative and transudative pleural effusion\",\"mnemonic_string\":\"Data Blip Champion\"},{\"subject\":\"Features of chronic renal failure\",\"mnemonic_string\":\"The 7 P's\"},{\"subject\":\"Non-motor features of Parkinson's Disease\",\"mnemonic_string\":\"Displace\"},{\"subject\":\"Investigations in acute pancreatitis\",\"mnemonic_string\":\"Pancreas\"},{\"subject\":\"High risk for stroke in AF\",\"mnemonic_string\":\"Sad Chavs\"}]")
-  },
-  {
-    id: 1,
-    name: "Cardiology",
-    mnemonics: JSON.parse("[{\"subject\":\"Features of chronic renal failure\",\"mnemonic_string\":\"The 7 P's\"},{\"subject\":\"Non-motor features of Parkinson's Disease\",\"mnemonic_string\":\"Displace\"},{\"subject\":\"Investigations in acute pancreatitis\",\"mnemonic_string\":\"Pancreas\"},{\"subject\":\"High risk for stroke in AF\",\"mnemonic_string\":\"Sad Chavs\"}]")
-  },
+var MNEMONICS = [
+  {id: 1, topic_id: 0, subject:"Bowel components", mnemonic: "Dow Jones Industrial Average Closing Stock Report", image_src: "http://equityclock.com/pictures/SeasonalChartsDowJonesIndustrialAverageS_269F/image_4.png"},
+  {id: 2, topic_id: 0, subject:"Atrioventricular valves Hi Yield", mnemonic: "LAB RAT", image_src: "http://cardiffstudentmedia.co.uk/gairrhydd/wp-content/uploads/sites/2/2013/11/mouse-lab-rat-101117-02.jpg"},
+  {id: 3, topic_id: 0, subject:"Axillary artery branches", mnemonic: "Screw The Lawyer Save A Patient", image_src: "http://ballinyourcourt.files.wordpress.com/2012/10/screw-you.jpg"},
+  {id: 4, topic_id: 0, subject: "Brachial artery: recurrent and collateral branches", mnemonic: "I Am Pretty Sexy", image_src: "http://gagmark.com/wp-content/uploads/2012/10/Im-Sexy.png"}
+];
+
+var TOPICS = [
+  {id: 0, name: "Anatomy"},
+  {id: 1, name: "Cardiology"},
   {id: 2, name: "Anesthesiology", mnemonics: []},
-  {id: 2, name: "  Psychology", mnemonics: []},
-  {id: 2, name: "  Biochemistry", mnemonics: []},
+  {id: 2, name: "Psychology", mnemonics: []},
+  {id: 2, name: "Biochemistry", mnemonics: []},
   {id: 3, name: "Cardiology", mnemonics: []},
   {id: 3, name: "Chemistry", mnemonics: []},
   {id: 3, name: "Dermatology", mnemonics: []},
@@ -71,47 +70,66 @@ var app = {
 $(document).bind( "pagebeforechange", function( e, data ) {
 
   if ( typeof data.toPage === "string" ) {
-    var u = $.mobile.path.parseUrl( data.toPage ),
-    re = /^#browse-topic\?/;
+    var u = $.mobile.path.parseUrl( data.toPage );
 
-    if ( u.hash.search(re) !== -1 ) {
-
-      // We're being asked to display the items for a specific category.
-      // Call our internal method that builds the content for the category
-      // on the fly based on our in-memory category data structure.
+    if ( u.hash.search(/^#topic\?id=/) !== -1 ) {
       showTopic( u, data.options );
-
-      // Make sure to tell changePage() we've handled this call so it doesn't
-      // have to do anything.
-      //e.preventDefault();
+      e.preventDefault();
+    }
+    else if ( u.hash.search(/^#mnemonic\?id=/) !== -1 ) {
+      showMnemonic( u, data.options );
+      e.preventDefault();
     }
   }
 });
 
-function showTopic(u, options) {
-  id = u.hash.replace("#browse-topic?id=", "");
-  renderTopic(topics[id]);
+function changePage(page, urlObj, options) {
+  options.dataUrl = urlObj.hash.replace("#", "");
+  $.mobile.changePage( page, options );
+}
+
+function showTopic(urlObj, options) {
+  id = urlObj.hash.replace("#topic?id=", "");
+  topic = $.grep(TOPICS, function(e,i) {return e.id == id})[0];
+  renderTopic(topic);
+  changePage($('#topic'), urlObj, options);
+}
+
+function showMnemonic(urlObj, options) {
+  id = urlObj.hash.replace("#mnemonic?id=", "");
+  mnemonic = $.grep(MNEMONICS, function(e,i) {return e.id == id})[0];
+  renderMnemonic(mnemonic);
+  changePage($('#mnemonic'), urlObj, options);
 }
 
 function renderTopics()
 {
-  for(i in topics) {
-    topic = topics[i];
-    css_class = "topic ui-block-" + (grid2[i%2]);
-    topic_html = "<a href='#browse-topic?id=" + topic.id + "' class='" + css_class + "'><div class='img'/><div class='name'>" + topic.name + "</div></a>"
-      $('#browse-topics .topics').append(topic_html);
+  for(i in TOPICS) {
+    topic = TOPICS[i];
+    css_class = "topic box ui-block-" + (grid2[i%2]);
+    topic_html = "<a href='#topic?id=" + topic.id + "' class='" + css_class + "'><div class='img'/><div class='name'>" + topic.name + "</div></a>"
+      $('#topics .topics').append(topic_html);
   }
 }
 
 function renderTopic(topic)
 {
-  $('#browse-topic .title').html(topic.name);
-  $('#browse-topic .mnemonics').html('Foobar');
+  $page = $('#topic')
+  $page.find('h1').html(topic.name);
 
-  for(i in topic.mnemonics) {
-    mnemonic = topic.mnemonics[i];
-    css_class = "mnemonic ui-block-" + (grid2[i%2]);
-    mnemonic_html = "<div class='" + css_class + "'>" + mnemonic.mnemonic_string + "</a>"
-      $('#browse-topic .mnenomics').append(mnemonic_html);
+  var mnemonics = $.grep(MNEMONICS, function(e,i){return e.topic_id == topic.id});
+  for(i in mnemonics) {
+    mnemonic = mnemonics[i];
+    css_class = "mnemonic box ui-block-" + (grid2[i%2]);
+    mnemonic_html = "<a href='#mnemonic?id=" + mnemonic.id + "' class='" + css_class + "'><div class='img' style='background-image:url(" + mnemonic.image_src + ")'/><div class='subject'>" + mnemonic.subject + "</div><div class='mnemonic-string'>" + mnemonic.mnemonic + "</div></a>"
+    $page.find('.mnenomics').append(mnemonic_html);
   }
+}
+
+function renderMnemonic(mnemonic)
+{
+  $page = $('#mnemonic')
+  $page.find('.subject').html("<strong>" + mnemonic.subject + "</strong> can be remembered by: ");
+  $page.find('.mnemonic').html(mnemonic.mnemonic_string);
+  $page.find('.body').html(mnemonic.body);
 }
