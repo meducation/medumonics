@@ -6,20 +6,29 @@ var TOPICS;
 
 var $mnemonic;
 
-function setupTopics() {
+function setupMnemonicsAndTopics() {
+  for(i in MNEMONICS) {
+    var mnemonic = MNEMONICS[i];
+    mnemonic.image_url = mnemonic.image_urls[0];
+  }
+
   var topics = {}
   for(i in MNEMONICS) {
     topics[MNEMONICS[i].topic] = true;
   }
 
   window.TOPICS = []
-  id = 1
+  var id = 1
   for(name in topics) {
     window.TOPICS.push({id: id, name: name});
     id += 1;
   }
 }
-setupTopics();
+setupMnemonicsAndTopics();
+
+function mnemonicsForTopic(topic) {
+  return $.grep(MNEMONICS, function(e,i){return e.topic == topic.name});
+}
 
 $(function() {
   $mnemonic = $('#mnemonic');
@@ -64,16 +73,16 @@ $(document).bind( "pagebeforechange", function( e, data ) {
 });
 
 $( document ).on( "swiperight", $mnemonic, function() {
-  i = MNEMONICS.indexOf($mnemonic.mnemonic)
-  mnemonic = MNEMONICS[i - 1];
+  var i = MNEMONICS.indexOf($mnemonic.mnemonic)
+  var mnemonic = MNEMONICS[i - 1];
   if(mnemonic) {
     $.mobile.changePage( "#mnemonic?id=" + mnemonic.id, { reverse: true, transition: 'slide', allowSamePageTransition: true   } );
   }
 })
 
 $( document ).on( "swipeleft", $mnemonic, function() {
-  i = MNEMONICS.indexOf($mnemonic.mnemonic)
-  mnemonic = MNEMONICS[i + 1];
+  var i = MNEMONICS.indexOf($mnemonic.mnemonic)
+  var mnemonic = MNEMONICS[i + 1];
   if(mnemonic) {
     $.mobile.changePage( "#mnemonic?id=" + mnemonic.id, { transition: 'slide', allowSamePageTransition: true  } );
   }
@@ -85,15 +94,15 @@ function changePage(page, urlObj, options) {
 }
 
 function showTopic(urlObj, options) {
-  id = urlObj.hash.replace("#topic?id=", "");
-  topic = $.grep(TOPICS, function(e,i) {return e.id == id})[0];
+  var id = urlObj.hash.replace("#topic?id=", "");
+  var topic = $.grep(TOPICS, function(e,i) {return e.id == id})[0];
   renderTopic(topic);
   changePage($('#topic'), urlObj, options);
 }
 
 function showMnemonic(urlObj, options) {
-  id = urlObj.hash.replace("#mnemonic?id=", "");
-  mnemonic = $.grep(MNEMONICS, function(e,i) {return e.id == id})[0];
+  var id = urlObj.hash.replace("#mnemonic?id=", "");
+  var mnemonic = $.grep(MNEMONICS, function(e,i) {return e.id == id})[0];
   renderMnemonic(mnemonic);
   changePage($('#mnemonic'), urlObj, options);
 }
@@ -101,24 +110,35 @@ function showMnemonic(urlObj, options) {
 function renderTopics()
 {
   for(i in TOPICS) {
-    topic = TOPICS[i];
-    css_class = "topic box ui-block-" + (grid2[i%2]);
-    topic_html = "<a href='#topic?id=" + topic.id + "' class='" + css_class + "'><div class='img'/><div class='name'>" + topic.name + "</div></a>"
-      $('#topics .topics').append(topic_html);
+    var topic = TOPICS[i];
+    var css_class = "topic box ui-block-" + (grid2[i%2]);
+    var topic_html = "<a href='#topic?id=" + topic.id + "' class='" + css_class + "'><div class='images'/>"
+    var mnemonics = mnemonicsForTopic(topic);
+    var image_count = 0;
+    for (i in mnemonics) {
+      var mnemonic = mnemonics[i];
+      if(mnemonic.image_urls.length == 0) { continue; }
+      topic_html += "<img src='" + mnemonic.image_url + "'/>"
+      image_count += 1
+      if(image_count == 4) { break; }
+    }
+    topic_html += "</div><div class='name'>" + topic.name + "</div></a>"
+    $('#topics .topics').append(topic_html);
   }
 }
 
 function renderTopic(topic)
 {
-  $page = $('#topic')
+  var $page = $('#topic')
   $page.find('h1').html(topic.name);
 
-  var mnemonics = $.grep(MNEMONICS, function(e,i){return e.topic == topic.name});
   $page.find('.mnenomics').html("");
+
+  var mnemonics = mnemonicsForTopic(topic);
   for(i in mnemonics) {
-    mnemonic = mnemonics[i];
-    css_class = "mnemonic box ui-block-" + (grid2[i%2]);
-    mnemonic_html = "<a href='#mnemonic?id=" + mnemonic.id + "' class='" + css_class + "'><div class='img' style='background-image:url(" + mnemonic.image_urls[0] + ")'/><div class='subject'>" + mnemonic.subject + "</div><div class='mnemonic-string'>" + mnemonic.mnemonic + "</div></a>"
+    var mnemonic = mnemonics[i];
+    var css_class = "mnemonic box ui-block-" + (grid2[i%2]);
+    var mnemonic_html = "<a href='#mnemonic?id=" + mnemonic.id + "' class='" + css_class + "'><div class='img' style='background-image:url(" + mnemonic.image_url + ")'/><div class='subject'>" + mnemonic.subject + "</div><div class='mnemonic-string'>" + mnemonic.mnemonic + "</div></a>"
     $page.find('.mnenomics').append(mnemonic_html);
   }
 }
@@ -128,10 +148,9 @@ function renderMnemonic(mnemonic)
   topic = $.grep(TOPICS, function(e,i) {return e.id == mnemonic.topic_id})[0];
 
   $mnemonic.mnemonic = mnemonic;
-  $mnemonic.find('.header').css('backgroundImage', "url(" + mnemonic.image_urls[0] + ")");
+  $mnemonic.find('.header').css('backgroundImage', "url(" + mnemonic.image_url + ")");
   $mnemonic.find('h1').html(mnemonic.mnemonic);
   $mnemonic.find('.subject').html(mnemonic.subject);
   $mnemonic.find('.mnemonic').html(mnemonic.mnemonic);
-  body = "<p>NOTE: From proximal to distal:</p> Duodenum<br/> Jejunum<br/> Ileum<br/> Appendix<br/> Colon<br/> Sigmoid<br/> Rectum</p> <p>NOTE: Alternatively: to include the cecum, 'Dow Jones Industrial Climbing Average Closing Stock Report'.</p>"
-  $mnemonic.find('.body').html(body);
+  $mnemonic.find('.body').html(mnemonic.body);
 }
