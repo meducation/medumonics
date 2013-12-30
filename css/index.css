@@ -104,16 +104,29 @@ body {
   margin-bottom:3%;
   width: 48.5% !important;
   padding:0px;
+  position:relative;
 }
 
-#topics .topic img {
+#topics .topic .images {
+  border-bottom:1px solid #ddd;
+  height:50px;
+}
+
+#topics .topic .img {
+  background-size:cover;
   display:inline-block;
-  width:50%;
+  width:25%;
   height:50px;
 }
 
 #topics .topic .name {
-  padding:1rem;
+  position: absolute;
+  bottom: 0px;
+  color: #fff;
+  background:-webkit-linear-gradient(top, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.0) 65%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.7) 100%);
+  padding: 35px 1rem 5px 1rem;
+  height:80px;
+  width: 90%;
 }
 
 #topic .mnemonic.ui-block-a {

@@ -72,7 +72,7 @@ $(document).bind( "pagebeforechange", function( e, data ) {
   }
 });
 
-$( document ).on( "swiperight", $mnemonic, function() {
+/*$( document ).on( "swiperight", $mnemonic, function() {
   var i = MNEMONICS.indexOf($mnemonic.mnemonic)
   var mnemonic = MNEMONICS[i - 1];
   if(mnemonic) {
@@ -86,7 +86,7 @@ $( document ).on( "swipeleft", $mnemonic, function() {
   if(mnemonic) {
     $.mobile.changePage( "#mnemonic?id=" + mnemonic.id, { transition: 'slide', allowSamePageTransition: true  } );
   }
-})
+})*/
 
 function changePage(page, urlObj, options) {
   options.dataUrl = urlObj.hash.replace("#", "");
@@ -112,13 +112,13 @@ function renderTopics()
   for(i in TOPICS) {
     var topic = TOPICS[i];
     var css_class = "topic box ui-block-" + (grid2[i%2]);
-    var topic_html = "<a href='#topic?id=" + topic.id + "' class='" + css_class + "'><div class='images'/>"
+    var topic_html = "<a href='#topic?id=" + topic.id + "' class='" + css_class + "'><div class='images'>"
     var mnemonics = mnemonicsForTopic(topic);
     var image_count = 0;
     for (i in mnemonics) {
       var mnemonic = mnemonics[i];
       if(mnemonic.image_urls.length == 0) { continue; }
-      topic_html += "<img src='" + mnemonic.image_url + "'/>"
+      topic_html += "<div class='img' style='background-image:url(" + mnemonic.image_url + ")'/>"
       image_count += 1
       if(image_count == 4) { break; }
     }
